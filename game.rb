@@ -67,6 +67,7 @@ class Game
 		end
 		puts " "
 		puts "Score: #{@player_score}"
+		puts " "
 	end
 
 	def get_dealer_score
@@ -87,6 +88,7 @@ class Game
 		end
 		puts " "
 		puts "Score: #{@dealer_score}"
+		puts " "
 	end
 
 	def player_hit
@@ -115,6 +117,7 @@ class Game
 	end
 
 	def player_turn
+		puts "You have £#{@player.bankroll}"
 		while @player_score < 22
 			if stick_or_twist == "s"
 				break
@@ -122,9 +125,21 @@ class Game
 		end
 	end
 
+	def player_bet
+		puts "You have £#{@player.bankroll}"
+		@player_wager = 0
+		until @player_wager > 0 && @player_wager <= @player.bankroll
+			puts "Place your bets please"
+			@player_wager = gets.chomp.to_i
+		end
+		puts " "
+		puts "#{@player.name} bets £#{@player_wager}"
+		@player.bankroll -= @player_wager
+	end
+
 	def dealer_turn
 		if @player_score > 21
-			puts "You are bust, dealer wins the hand!"
+			puts "You are bust!"
 		else
 			announce_full_dealer_hand
 			get_dealer_score
@@ -159,15 +174,31 @@ class Game
 		end
 	end
 
+	def reset
+		#Deck resets
+		@player.hand.each do |card|
+			@cards.deck << card
+		end
+		@player.hand.replace([])
+		@dealer.hand.each do |card|
+			@cards.deck << card
+		end
+		@dealer.hand.replace([])
+	end
+
 	def test
-		@cards.shuffle_cards
-		deal_cards
-		announce_dealer_hand
-		announce_player_hand
-		get_player_score
-		player_turn
-		dealer_turn
-		result
+		until @player.bankroll == 0
+			@cards.shuffle_cards
+			player_bet
+			deal_cards
+			announce_dealer_hand
+			announce_player_hand
+			get_player_score
+			player_turn
+			dealer_turn
+			result
+			reset
+		end
 	end
 end
 
