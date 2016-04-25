@@ -127,6 +127,7 @@ class Game
 
 	def player_bet
 		puts "You have £#{@player.bankroll}"
+		puts "Dealer has £#{@dealer.bankroll}"
 		@player_wager = 0
 		until @player_wager > 0 && @player_wager <= @player.bankroll
 			puts "Place your bets please"
@@ -160,17 +161,25 @@ class Game
 	def result
 		if @player_score >21
 			puts "Dealer wins"
+			@dealer.bankroll += @player_wager
 		elsif @player_score < 21 && @dealer_score > 21
 			puts "Player wins"
+			@player.bankroll += @player_wager * 2
+			@dealer.bankroll -= @player_wager
 		elsif @player_score > 21 && @dealer_score < 21
 			puts "Dealer wins!"
+			@dealer.bankroll += @player_wager
 		elsif (@dealer_score > @player_score) && (@dealer_score <22) && (@player_score && @dealer_score <22)
 			puts "Dealer wins"
+			@dealer.bankroll += @player_wager
 		elsif (@player_score > @dealer_score) && (@player_score < 22) && (@dealer_score && @player_score < 22)
 			puts "Player wins!"
+			@player.bankroll += @player_wager * 2
+			@dealer.bankroll -= @player_wager
 		elsif 
 			(@player_score == @dealer_score) && (@player_score < 22) && (@dealer_score && @player_score < 22)
-			pus "Hand is a draw"
+			puts "Hand is a draw"
+			@player.bankroll += @player_wager
 		end
 	end
 
@@ -186,8 +195,8 @@ class Game
 		@dealer.hand.replace([])
 	end
 
-	def test
-		until @player.bankroll == 0
+	def play
+		until @player.bankroll == 0 || @dealer.bankroll <= 0
 			@cards.shuffle_cards
 			player_bet
 			deal_cards
@@ -199,8 +208,13 @@ class Game
 			result
 			reset
 		end
+		if @dealer.bankroll <= 0 
+			puts "CONGRATULATIONS!! You have won the game!"
+		else
+			puts "Better luck next time, the dealer took all your cash!"
+		end
 	end
 end
 
 a = Game.new
-a.test
+a.play
