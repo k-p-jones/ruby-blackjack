@@ -8,6 +8,7 @@ class Game
 		get_player
 		@cards = Deck.new
 		@dealer = Dealer.new
+		@player_score = 0
 	end
 	#gets the players name
 	def get_player
@@ -49,8 +50,7 @@ class Game
 		end
 	end
 	#gets a players score, possible refactor, do I really need two methods for this?
-	def get_player_score
-		@player_score = 0
+	def get_initial_player_score
 		faces = %w(J Q K A)
 		ranks = %W(2 3 4 5 6 7 8 9 10)
 		@player.hand.each do |card|
@@ -59,10 +59,29 @@ class Game
 				@player_score += score
 			elsif faces.include?(card.rank)
 				if card.rank == "A"
-					@player_score += 11
+					is_ace(self.rank)
 				else
 					@player_score += 10
 				end
+			end
+		end
+		puts " "
+		puts "Score: #{@player_score}"
+		puts " "
+	end
+	#adjust the players score after hit
+	def adjust_player_score
+		faces = %w(J Q K A)
+		ranks = %W(2 3 4 5 6 7 8 9 10)
+		card = @player.hand.last
+		if ranks.include?(card.rank)
+			score = card.rank.to_i
+			@player_score += score
+		elsif faces.include?(card.rank)
+			if card.rank == "A"
+				is_ace(card.rank)
+			else
+				@player_score += 10
 			end
 		end
 		puts " "
@@ -107,13 +126,27 @@ class Game
 			choice = gets.chomp.to_s.downcase
 		end
 		if choice == "s"
-			get_player_score
+			puts "Score: #{@player_score}"
 			return "s"
 		else
 			player_hit
 			announce_player_hand
-			get_player_score
+			adjust_player_score
 		end
+	end
+	#aces high or low in opening hand
+	def is_ace(card_rank)
+			puts "Make this ace high(h) or low(l)?"
+			choice = gets.chomp.to_s.downcase
+			unless choice == "h" || choice == "l"
+				puts "Make this ace high(h) or low(l)?"
+				choice = gets.chomp.to_s.downcase
+			end
+			if choice == "l"
+				@player_score += 1
+			else
+				@player_score += 11
+			end
 	end
 	#loop for player turn
 	def player_turn
@@ -181,6 +214,7 @@ class Game
 	end
 	#reset the deck
 	def reset
+		@player_score = 0
 		@player.hand.each do |card|
 			@cards.deck << card
 		end
@@ -198,7 +232,7 @@ class Game
 			deal_cards
 			announce_dealer_hand
 			announce_player_hand
-			get_player_score
+			get_initial_player_score
 			player_turn
 			dealer_turn
 			result
