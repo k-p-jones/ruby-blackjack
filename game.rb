@@ -9,13 +9,13 @@ class Game
 		@cards = Deck.new
 		@dealer = Dealer.new
 	end
-
+	#gets the players name
 	def get_player
 		@player = Player.new("")
 		puts "Please enter your name...."
 		@player.name = gets.chomp.to_s
 	end
-
+	#deals hands
 	def deal_cards
 		puts " "
 		puts "Dealing cards..."
@@ -27,28 +27,28 @@ class Game
 			@player.hand << @cards.deck.shift
 		end
 	end
-
+	#declares one card of the dealers hand
 	def announce_dealer_hand
 		d_hand = @dealer.hand.first
 		puts "The dealer is showing"
 		puts "#{d_hand.rank} #{d_hand.suit}"
 		puts " "
 	end
-
+	#declares full dealer hand
 	def announce_full_dealer_hand
 		puts "The dealer is showing"
 		@dealer.hand.each do |card|
 			puts"#{card.rank} #{card.suit}"
 		end
 	end
-
+	#declares full player hand
 	def announce_player_hand
 		puts "You have been dealt:"
 		@player.hand.each do |card|
 			puts "#{card.rank} #{card.suit}"
 		end
 	end
-
+	#gets a players score, possible refactor, do I really need two methods for this?
 	def get_player_score
 		@player_score = 0
 		faces = %w(J Q K A)
@@ -69,7 +69,7 @@ class Game
 		puts "Score: #{@player_score}"
 		puts " "
 	end
-
+	#gets the score, possible refactor, do I really need two methods for this?
 	def get_dealer_score
 		@dealer_score = 0
 		faces = %w(J Q K A)
@@ -90,15 +90,15 @@ class Game
 		puts "Score: #{@dealer_score}"
 		puts " "
 	end
-
+	#shift cards from deck to a players hand
 	def player_hit
 		@player.hand << @cards.deck.shift
 	end
-
+	#shift cards from the deck to the dealers hand
 	def dealer_hit
 		@dealer.hand << @cards.deck.shift
 	end
-
+	#method for player action, possible refactor? It's a bit ugly
 	def stick_or_twist
 		puts "Stick(s) or twist(t)?"
 		choice = gets.chomp.to_s.downcase
@@ -115,7 +115,7 @@ class Game
 			get_player_score
 		end
 	end
-
+	#loop for player turn
 	def player_turn
 		puts "You have £#{@player.bankroll}"
 		while @player_score < 22
@@ -124,7 +124,7 @@ class Game
 			end
 		end
 	end
-
+	#sets player wager. Sets itself to zero every time it is called
 	def player_bet
 		puts "You have £#{@player.bankroll}"
 		puts "Dealer has £#{@dealer.bankroll}"
@@ -137,7 +137,7 @@ class Game
 		puts "#{@player.name} bets £#{@player_wager}"
 		@player.bankroll -= @player_wager
 	end
-
+	#dealer turn, checks if player is bust before acting
 	def dealer_turn
 		if @player_score > 21
 			puts "You are bust!"
@@ -157,7 +157,7 @@ class Game
 			end
 		end
 	end
-
+	#determin winner and adjust bankrolls accordingly
 	def result
 		if @player_score >21
 			puts "Dealer wins"
@@ -166,9 +166,6 @@ class Game
 			puts "Player wins"
 			@player.bankroll += @player_wager * 2
 			@dealer.bankroll -= @player_wager
-		elsif @player_score > 21 && @dealer_score < 21
-			puts "Dealer wins!"
-			@dealer.bankroll += @player_wager
 		elsif (@dealer_score > @player_score) && (@dealer_score <22) && (@player_score && @dealer_score <22)
 			puts "Dealer wins"
 			@dealer.bankroll += @player_wager
@@ -182,9 +179,8 @@ class Game
 			@player.bankroll += @player_wager
 		end
 	end
-
+	#reset the deck
 	def reset
-		#Deck resets
 		@player.hand.each do |card|
 			@cards.deck << card
 		end
@@ -194,7 +190,7 @@ class Game
 		end
 		@dealer.hand.replace([])
 	end
-
+	#main game loop
 	def play
 		until @player.bankroll == 0 || @dealer.bankroll <= 0
 			@cards.shuffle_cards
