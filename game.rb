@@ -3,7 +3,6 @@ require './player.rb'
 require './cards_and_deck.rb'
 
 class Game
-	attr_accessor :rank, :suit, :hand
 	def initialize
 		get_player
 		@cards = Deck.new
@@ -59,7 +58,7 @@ class Game
 				@player_score += score
 			elsif faces.include?(card.rank)
 				if card.rank == "A"
-					is_ace(self.rank)
+					is_ace(card.rank)
 				else
 					@player_score += 10
 				end
